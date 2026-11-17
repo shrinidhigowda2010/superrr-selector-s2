@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who holds their nerve? RR pressure picks, __AUTHOR__</title>
+<meta name="author" content="__AUTHOR__">
+<style>
+:root{--pink:#EA1A85;--blue:#254AA5;--navy:#0B1A4A;--ink:#1f2640;--mut:#667089;--line:#e4e7ef;--soft:#f7f8fb}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff;font-size:15px;line-height:1.55}
+header{border-top:6px solid var(--pink);padding:22px 32px 10px;max-width:1200px;margin:auto}
+header h1{margin:0;font-size:26px;color:var(--navy)}
+header p{margin:4px 0 0;color:var(--mut);font-size:14px}
+nav{max-width:1200px;margin:auto;padding:0 32px;display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:5}
+nav button{background:none;border:none;border-bottom:3px solid transparent;padding:10px 12px;font-size:14px;color:var(--mut);cursor:pointer}
+nav button.on{color:var(--navy);border-bottom-color:var(--pink);font-weight:600}
+main{max-width:1200px;margin:auto;padding:18px 32px 40px}
+section{display:none}section.on{display:block}
+h2{color:var(--navy);font-size:20px;margin:18px 0 8px}
+h3{color:var(--blue);font-size:16px;margin:16px 0 6px}
+p{margin:6px 0 10px;max-width:860px}
+.mut{color:var(--mut);font-size:13px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.facts{display:flex;flex-wrap:wrap;gap:32px;margin:10px 0 6px}
+.facts div{min-width:140px}.facts b{display:block;font-size:26px;color:var(--navy)}.facts span{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:6px 0 10px}
+th{text-align:left;padding:7px 8px;border-bottom:2px solid var(--navy);color:var(--navy);font-weight:600;white-space:nowrap}
+th.sort{cursor:pointer}th.sort:hover{color:var(--pink)}
+td{padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tag{display:inline-block;font-size:12px;padding:1px 7px;border-radius:4px;background:var(--soft);color:var(--mut);margin-left:4px}
+.tag.pool{background:#fde7f2;color:#a3105a}
+.note{color:#7a5300;font-size:12.5px}
+.up{color:#0a7a43}.down{color:#b3262d}
+.meter{display:inline-block;width:60px;height:6px;background:var(--line);border-radius:3px;vertical-align:middle;margin-right:6px}
+.meter i{display:block;height:6px;border-radius:3px;background:var(--pink)}
+select{font-size:14px;padding:6px 8px;border:1px solid var(--line);border-radius:6px}
+.chart{position:relative;height:260px}
+.quote{border-left:3px solid var(--pink);padding:2px 14px;margin:12px 0;color:#38405e}
+footer{max-width:1200px;margin:auto;padding:16px 32px 30px;color:var(--mut);font-size:12.5px;border-top:1px solid var(--line)}
+</style></head><body>
+<header><h1>Who holds their nerve?</h1>
+<p>Pressure picks for Rajasthan Royals at the IPL 2027 auction &middot; SupeRR Selector Season 2, Round 1 &middot; __AUTHOR__</p></header>
+<nav id="nav"></nav>
+<main>
+<section id="overview"></section><section id="bat"></section><section id="bowl"></section><section id="cards"></section>
+<section id="trust"></section><section id="squad"></section><section id="auction"></section><section id="method"></section>
+</main>
+<footer>Built from the RR ball-by-ball data pack (IPL and T20I, 2022 to 2026). Squad and fitness facts come from public reporting as of __ASOF__ and never change a rank.</footer>
+<script>__CHART__</script>
+<script>
+const D = __DATA__;
+const PINK = '#EA1A85', BLUE = '#254AA5', GREY = '#a9b2cc';
+Chart.defaults.font.family = '-apple-system,Segoe UI,Roboto,Arial'; Chart.defaults.color = '#1f2640'; Chart.defaults.animation = false;
+Chart.defaults.maintainAspectRatio = false;
+
+const TABS = [['overview','Overview'],['bat','Batters'],['bowl','Bowlers'],['cards','Player by player'],
+              ['trust','How sure am I?'],['squad','RR squad'],['auction','Auction plan'],['method','Method and limits']];
+const nav = document.getElementById('nav');
+TABS.forEach(([id, label]) => { const b = document.createElement('button'); b.textContent = label; b.id = 't_' + id; b.onclick = () => show(id); nav.appendChild(b); });
+const onShow = {};
+function show(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.toggle('on', s.id === id));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.id === 't_' + id));
+  history.replaceState(null, '', '#tab=' + id);
+  if (onShow[id]) onShow[id]();
+}
+const f1 = x => x == null ? '-' : (+x).toFixed(1), f2 = x => x == null ? '-' : (+x).toFixed(2);
+const pct = x => Math.round(100 * x);
+const status = r => r.pool ? '<span class="tag pool">auction pool</span>' : `<span class="tag">${r.status.replace('Retained by ', 'retained, ')}</span>`;
+const meter = v => `<span class="meter"><i style="width:${v}%"></i></span>${v}%`;
+const signed = v => v >= 0 ? `<span class="up">+${f1(v)}</span>` : `<span class="down">${f1(v)}</span>`;
+const list = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1] : a.join('');
+const ALL = [...D.batters, ...D.bowlers];
+const evidence = s => s.kind === 'bat'
+  ? `${s.pressure_balls} balls, SR ${s.sr} vs ${s.exp_sr} expected, good in ${s.positive}% of matches`
+  : `${s.pressure_balls} balls, ${s.econ} an over vs ${s.exp_econ} expected, ${s.wickets} wickets, good in ${s.positive}% of matches`;
+
+/* Overview */
+(function () {
+  const s = D.situation, bs = D.band_stats, cp = D.chase_pressure;
+  const steady = ALL.filter(r => r.boot_top10_pct >= 70).map(r => r.name);
+  const short = (rows, title) => `<h3>${title}</h3><table><tr><th>#</th><th>Player</th><th>Top 10 in resamples</th><th></th></tr>` +
+    rows.map(r => `<tr><td>${r.final_rank}</td><td>${r.name}</td><td>${meter(r.boot_top10_pct)}</td><td>${status(r)}</td></tr>`).join('') + '</table>';
+  document.getElementById('overview').innerHTML = `
+  <p>I wanted to find the players who have actually delivered when a T20 game was on the line, judged against what an average player would have done on the same balls. These are the two lists I am submitting, followed by how I got there.</p>
+  <div class="facts"><div><b>${s.matches}</b><span>matches (${s.ipl_matches} IPL, ${s.t20i_matches} T20I)</span></div>
+  <div><b>${s.balls.toLocaleString()}</b><span>deliveries scored</span></div>
+  <div><b>${s.pressure_balls.toLocaleString()}</b><span>pressure balls (${(100 * s.pressure_share).toFixed(1)}%)</span></div>
+  <div><b>${s.eligible_batters} / ${s.eligible_bowlers}</b><span>batters / bowlers with enough of them</span></div></div>
+  <div class="cols"><div>${short(D.batters, 'Top 10 batters')}</div><div>${short(D.bowlers, 'Top 10 bowlers')}</div></div>
+  <p class="mut">The bar shows how often a player made the top 10 when I resampled the matches 200 times. ${list(steady)} are in at least 70% of them.</p>
+  <h2>What counts as pressure</h2>
+  <p>Every ball gets a score from 0 to 1, worked out only from the situation before it was bowled. When chasing, that means the required rate and wickets in hand, both weighing more as the overs run out, with a minimum score for the obviously tense moments (say 30 needed off the last 18). When batting first, it means the death overs, collapses and being below par. Knockouts get a small bump. A ball counts as pressure from ${D.settings.pressure_threshold} up.</p>
+  <p>One thing I had to fix: hopeless chases. Without a correction, the typical required rate on chase "pressure" balls was ${D.chase_no_fade.median_rrr}, and teams won only ${(100 * D.chase_no_fade.win_rate_rrr18).toFixed(1)}% of the games where it had reached 18. That is slogging, not pressure, so the score now fades out between a required rate of 15 and 21.</p>
+  <div class="cols"><div><h3>Pressure balls really are different</h3><div class="chart"><canvas id="cBand"></canvas></div>
+  <p class="mut">Batters are out ${bs.pressure.dismissal_pct} times per 100 pressure balls, against ${bs.ordinary.dismissal_pct} normally. Chasing sides won ${pct(cp.chase_win_rate)}% of the games behind pressure balls and ${pct(D.chase_ordinary_win_rate)}% behind ordinary ones.</p></div>
+  <div><h3>Where they happen</h3><div class="chart"><canvas id="cPhase"></canvas></div><p class="mut">Nearly all of it is in overs 13 to 20.</p></div></div>`;
+  new Chart(cBand, {type: 'bar', data: {labels: ['Strike rate', 'Outs per 1,000 balls', 'Dot balls %', 'Runs per 10 overs'],
+    datasets: [{label: 'Ordinary', backgroundColor: BLUE, data: [bs.ordinary.sr, bs.ordinary.dismissal_pct * 10, bs.ordinary.dot_pct, bs.ordinary.econ * 10]},
+               {label: 'Pressure', backgroundColor: PINK, data: [bs.pressure.sr, bs.pressure.dismissal_pct * 10, bs.pressure.dot_pct, bs.pressure.econ * 10]}]},
+    options: {plugins: {legend: {position: 'bottom'}}}});
+  const P = ['PP', 'MID', 'LATE', 'DEATH'];
+  new Chart(cPhase, {type: 'bar', data: {labels: ['Overs 1-6', '7-12', '13-16', '17-20'],
+    datasets: [['ordinary', BLUE], ['middle', GREY], ['pressure', PINK]].map(([k, c]) => ({label: k, backgroundColor: c, data: P.map(p => 100 * D.phase_band[p][k])}))},
+    options: {scales: {x: {stacked: true}, y: {stacked: true, max: 100, title: {display: true, text: '% of balls'}}}, plugins: {legend: {position: 'bottom'}}}});
+})();
+
+/* Ranking tables */
+function rankTable(id, rows, kind) {
+  rows.forEach(r => r.lift = kind === 'bat' ? r.sr - r.exp_sr : r.exp_economy - r.economy);
+  const cols = kind === 'bat'
+    ? [['final_rank', '#'], ['name', 'Player'], ['balls_pressure', 'Pressure balls'], ['sr', 'SR'], ['exp_sr', 'Expected'], ['lift', 'Better by'], ['positive_pct', 'Good matches'], ['boot_top10_pct', 'Top 10 in resamples'], ['variants_in_top10', 'Versions'], ['status', 'Status']]
+    : [['final_rank', '#'], ['name', 'Player'], ['balls_pressure', 'Pressure balls'], ['economy', 'Econ'], ['exp_economy', 'Expected'], ['lift', 'Saved per over'], ['wickets', 'Wkts'], ['positive_pct', 'Good matches'], ['boot_top10_pct', 'Top 10 in resamples'], ['variants_in_top10', 'Versions'], ['status', 'Status']];
+  let key = 'final_rank', asc = true;
+  const el = document.getElementById(id);
+  el.innerHTML = `<h2>${kind === 'bat' ? 'Top 10 batters under pressure' : 'Top 10 bowlers under pressure'}</h2>
+  <p>${kind === 'bat' ? 'Expected is the strike rate an average batter would have had on exactly the same balls.' : 'Expected is what an average bowler would have conceded on exactly the same balls.'} The order comes from the average position across 200 resamples of the matches, so it rewards players who are good and steady. Click a column to sort. Versions shows how many of my seven versions of the model put him in the top 10.</p>
+  <div style="overflow:auto"><table><thead><tr>${cols.map(c => `<th class="sort" data-k="${c[0]}">${c[1]}</th>`).join('')}</tr></thead><tbody></tbody></table></div>
+  <h3>${kind === 'bat' ? 'Strike rate above expected' : 'Runs saved per over'} and how often he stays in the top 10</h3><div class="chart"><canvas id="${id}_ch"></canvas></div>`;
+  function render() {
+    const sorted = [...rows].sort((a, b) => { const x = a[key], y = b[key]; return typeof x === 'string' ? (asc ? x.localeCompare(y) : y.localeCompare(x)) : (asc ? x - y : y - x); });
+    el.querySelector('tbody').innerHTML = sorted.map(r => `<tr><td>${r.final_rank}</td><td><b>${r.name}</b> <span class="mut">${r.nation}</span><div class="mut">${r.fit}</div>${r.flag ? `<div class="note">${r.flag}</div>` : ''}</td>
+      <td>${r.balls_pressure}<div class="mut">IPL ${r.ipl_balls}, T20I ${r.t20i_balls}</div></td>` +
+      (kind === 'bat' ? `<td>${f1(r.sr)}</td><td>${f1(r.exp_sr)}</td><td>${signed(r.lift)}</td>` : `<td>${f2(r.economy)}</td><td>${f2(r.exp_economy)}</td><td>${signed(r.lift)}</td><td>${r.wickets}</td>`) +
+      `<td>${r.positive_pct}%</td><td>${meter(r.boot_top10_pct)}</td><td>${r.variants_in_top10}/7</td><td>${status(r)}</td></tr>`).join('');
+  }
+  el.querySelectorAll('th.sort').forEach(th => th.onclick = () => { const k = th.dataset.k; asc = key === k ? !asc : true; key = k; render(); });
+  render();
+  new Chart(document.getElementById(id + '_ch'), {type: 'bar', data: {labels: rows.map(r => r.name),
+    datasets: [{label: kind === 'bat' ? 'SR above expected' : 'runs saved per over', data: rows.map(r => +r.lift.toFixed(2)), backgroundColor: PINK, yAxisID: 'y'},
+               {label: 'top 10 in resamples (%)', type: 'line', data: rows.map(r => r.boot_top10_pct), borderColor: BLUE, backgroundColor: BLUE, yAxisID: 'y2'}]},
+    options: {plugins: {legend: {position: 'bottom'}}, scales: {y2: {position: 'right', min: 0, max: 100, grid: {display: false}}}}});
+}
+rankTable('bat', D.batters, 'bat'); rankTable('bowl', D.bowlers, 'bowl');
+
+/* Player by player */
+(function () {
+  const options = [...D.batters.map(r => ['bat', r]), ...D.bowlers.map(r => ['bowl', r])];
+  const el = document.getElementById('cards');
+  el.innerHTML = `<h2>Player by player</h2><p>Pick a player to see every match where he had pressure balls. Each bar is one match: runs above expected for a batter, runs saved for a bowler (with ten runs for each extra wicket). Pink means he beat the average that day.</p>
+  <select id="pSel">${options.map(([k, r], i) => `<option value="${i}">${k === 'bat' ? 'Batter' : 'Bowler'} ${r.final_rank}: ${r.name}</option>`).join('')}</select><div id="pBody"></div>`;
+  let c1, c2;
+  function draw() {
+    const [k, r] = options[+pSel.value], s = r.series;
+    const parts = k === 'bat' ? ['Scoring vs expected', 'Survival', 'Lift over his ordinary level', 'Worst-quarter matches'] : ['Runs saved', 'Extra wickets', 'Lift over his ordinary level', 'Worst-quarter matches'];
+    const vr = r.variant_ranks;
+    pBody.innerHTML = `<div class="facts"><div><b>No. ${r.final_rank}</b><span>${k === 'bat' ? 'batter' : 'bowler'}, index ${f1(r.index)}, ${r.nation}</span></div>
+      <div><b>${r.balls_pressure}</b><span>pressure balls in ${r.matches_pressure} matches</span></div>
+      <div><b>${k === 'bat' ? f1(r.sr) + ' / ' + f1(r.exp_sr) : f2(r.economy) + ' / ' + f2(r.exp_economy)}</b><span>${k === 'bat' ? 'SR / expected, ' + r.runs + ' runs, ' + r.outs + ' outs' : 'economy / expected, ' + r.wickets + ' wickets'}</span></div>
+      <div><b>${r.boot_top10_pct}%</b><span>of resamples in the top 10</span></div></div>
+      <p><b>For RR:</b> ${r.fit} ${status(r)}</p>${r.flag ? `<p class="note">${r.flag}</p>` : ''}
+      <div class="cols"><div><h3>Match by match</h3><div class="chart"><canvas id="cS"></canvas></div></div>
+      <div><h3>What drives his rank (compared with the other qualifiers)</h3><div class="chart"><canvas id="cZ"></canvas></div>
+      <p class="mut">Rank in each version: ${D.variants.map(v => D.variant_labels[v] + ' ' + (vr[v] || '-')).join(', ')}. A dash means he did not meet the sample rules in that version.</p></div></div>`;
+    const vals = s.map(m => m.value);
+    if (c1) c1.destroy(); if (c2) c2.destroy();
+    c1 = new Chart(cS, {type: 'bar', data: {labels: s.map(m => m.date.slice(0, 10)), datasets: [{data: vals, backgroundColor: vals.map(v => v >= 0 ? PINK : GREY)}]},
+      options: {plugins: {legend: {display: false}, tooltip: {callbacks: {afterLabel: c => { const m = s[c.dataIndex]; return `${m.fmt} v ${m.opp}, ${m.balls} balls, ` + (k === 'bat' ? `${m.runs} runs (expected ${m.exp})${m.out ? ', out' : ''}` : `${m.runs} conceded (expected ${m.exp}), ${m.wkts} wkts`); }}}},
+        scales: {x: {ticks: {maxRotation: 70, autoSkip: true, maxTicksLimit: 16}}}}});
+    c2 = new Chart(cZ, {type: 'bar', data: {labels: parts, datasets: [{data: [r.z_value, r.z_second, r.z_delta, r.z_floor], backgroundColor: [PINK, BLUE, '#7b8fd6', '#f59ac8']}]},
+      options: {indexAxis: 'y', plugins: {legend: {display: false}}, scales: {x: {min: -3, max: 3}}}});
+  }
+  pSel.onchange = draw; onShow.cards = draw;
+})();
+
+/* How sure am I */
+(function () {
+  const sh = D.split_half, V = D.variants;
+  const SHORT = {'primary': 'Main', 'ipl_only': 'IPL only', 'equal_weights': 'Equal wts', 'recency_off': 'No recency', 'pressure_t_0.5': 'From 0.50', 'pressure_t_0.6': 'From 0.60', 'sample_rules_0.8': 'Min. -20%'};
+  const table = rows => '<table><tr><th>Player</th><th>Top 10 in resamples</th><th>Avg position</th>' + V.map(v => `<th>${SHORT[v]}</th>`).join('') + '</tr>' +
+    rows.map(r => `<tr><td style="white-space:nowrap">${r.name}${r.eligible ? '' : ' <span class="mut">*</span>'}</td><td>${meter(r.boot)}</td><td>${r.expected_rank.toFixed(2)}</td>` +
+      V.map(v => { const x = r.ranks[v]; return `<td style="${x && x <= 10 ? 'color:#a3105a;font-weight:600' : 'color:#8a91a8'}">${x || '-'}</td>`; }).join('') + '</tr>').join('') + '</table>';
+  const shaky = ALL.filter(r => r.boot_top10_pct < 50).map(r => `${r.name} (${r.boot_top10_pct}%)`);
+  document.getElementById('trust').innerHTML = `<h2>How sure am I?</h2>
+  <p>I rebuilt the ranking 200 times on resampled matches, and seven more times with one choice changed each time. A pick I trust is one that stays near the top however the data is cut. The less settled places are ${list(shaky)}, so I read the bottom of each list as a group rather than an exact order. Pink numbers are top-10 finishes.</p>
+  <p class="mut">* below the sample rules on the full data, so not in my lists, but often in the top 10 of a resample. Main is the full model; the other columns change one thing: IPL balls only, equal weights, no extra weight on recent seasons, pressure line at 0.50 or 0.60, and pressure-ball minimums cut by 20%.</p>
+  <h3>Batters</h3><div style="overflow:auto">${table(D.stability_bat)}</div>
+  <h3>Bowlers</h3><div style="overflow:auto">${table(D.stability_bowl)}</div>
+  <div class="cols"><div><h3>Does pressure form repeat?</h3><div class="chart"><canvas id="cRel"></canvas></div></div>
+  <div><h3>What surprised me</h3><p>I split the data in half (odd and even matches, and 2022-24 against 2025-26) and checked whether a player's value in one half matched the other. General skill carries over well. Pressure-only value carries over much less.</p>
+  <p>So clutch is a real but noisy signal. That is why the model shrinks small samples hard, looks at a player's worst matches and not just his best, and reports how stable each pick is instead of pretending to be certain.</p></div></div>`;
+  const items = [['Bat, all balls (odd/even)', sh.bat.all_balls_odd_even_300[1], 0], ['Bat, all balls (by year)', sh.bat.all_balls_by_time_300[1], 0],
+    ['Bat, pressure (odd/even)', sh.bat.pressure_odd_even_30[1], 1], ['Bat, pressure (by year)', sh.bat.pressure_by_time_30[1], 1],
+    ['Bowl, all balls (odd/even)', sh.bowl.all_balls_odd_even_300[1], 0], ['Bowl, all balls (by year)', sh.bowl.all_balls_by_time_300[1], 0],
+    ['Bowl, pressure (odd/even)', sh.bowl.pressure_odd_even_30[1], 1], ['Bowl, pressure (by year, 60+)', sh.bowl.pressure_by_time_60[1], 1]];
+  new Chart(cRel, {type: 'bar', data: {labels: items.map(i => i[0]), datasets: [{data: items.map(i => i[1]), backgroundColor: items.map(i => i[2] ? PINK : BLUE)}]},
+    options: {indexAxis: 'y', plugins: {legend: {display: false}}, scales: {x: {min: -0.2, max: 0.7, title: {display: true, text: 'rank correlation between halves'}}}}});
+})();
+
+/* RR squad */
+(function () {
+  const sq = D.squad, s = D.situation;
+  const side = (x, kind) => !x ? '-' : `${x.balls} balls${kind === 'bat' && x.sr != null ? ', SR ' + f1(x.sr) + ' vs ' + f1(x.exp_sr) : ''}${kind === 'bowl' && x.econ != null ? ', econ ' + f2(x.econ) + ' vs ' + f2(x.exp_econ) : ''}<div class="mut">${x.reason}</div>`;
+  const jad = sq.find(p => p.name === 'Ravindra Jadeja'), bis = sq.find(p => p.name === 'Ravi Bishnoi');
+  const het = D.snapshots['Shimron Hetmyer|bat'], des = D.snapshots['Tushar Deshpande|bowl'];
+  document.getElementById('squad').innerHTML = `<h2>The RR squad through the same lens</h2>
+  <p>Of the 19 players RR have kept or traded for, only Jadeja (batting, No. ${jad.bat_rank} of ${s.eligible_batters}) and Bishnoi (bowling, No. ${bis.bowl_rank} of ${s.eligible_bowlers}) have enough pressure balls to rate, and neither ranks well. Most of the core is young or bats in the top order. With Hetmyer, Deshpande, Maphaka and Milne gone, the gaps are clear: a death bowler, a finisher, and some spin depth now that Vignesh Puthur has left. RR have six places to fill, three of them overseas.</p>
+  <p class="mut">${D.board.purse_note}</p>
+  <div style="overflow:auto"><table><tr><th>Player</th><th>Role</th><th>Batting under pressure</th><th>Bowling under pressure</th></tr>
+  ${sq.map(p => `<tr><td><b>${p.name}</b><div class="mut">${p.note}, ${p.country}</div></td><td>${p.role}</td><td>${side(p.bat, 'bat')}</td><td>${side(p.bowl, 'bowl')}</td></tr>`).join('')}</table></div>
+  <h3>Did RR release the right players?</h3><p>On these numbers, yes. Hetmyer: ${evidence(het)}. Deshpande: ${evidence(des)}.</p>`;
+})();
+
+/* Auction plan */
+(function () {
+  const B = D.board, S = D.snapshots;
+  const pool = ALL.filter(r => r.pool), retained = ALL.filter(r => !r.pool);
+  const items = a => '<ul>' + a.map(x => `<li><b>${x.name}.</b> ${x.note}</li>`).join('') + '</ul>';
+  const checked = D.checked_not_picked.map(c => `<tr><td><b>${c.name}</b></td><td>${c.kind === 'bat' ? 'Batting' : 'Bowling'}</td>
+    <td>${c.kind === 'bat' ? c.pressure_balls + ' balls, SR ' + c.sr + ' vs ' + c.exp_sr : c.pressure_balls + ' balls, econ ' + c.econ + ' vs ' + c.exp_econ}</td>
+    <td>${c.final_rank ? 'No. ' + c.final_rank + ' of ' + c.pool_size + ' (index ' + f1(c.index) + ')' : 'Below the sample rules'}</td><td>${c.reason}</td></tr>`).join('');
+  document.getElementById('auction').innerHTML = `<h2>Auction plan</h2>
+  <p>The two lists answer the question in the brief. The auction asks a different one: who can RR actually buy? Only ${list(pool.map(r => r.name))} from my twenty are in the pool. The other ${retained.length} are retained elsewhere and could only come by trade before 9 December.</p>
+  <h3>Who I would bid for</h3>
+  <p class="mut">Six places, three overseas. Two of these are below my own sample rules. Season 1 was won by backing an unknown name early, and I think Motie and Wadhera are that kind of bet, but I am labelling them as my judgment, not the model's.</p>
+  <div style="overflow:auto"><table><tr><th>Order</th><th>Player</th><th>Slot</th><th>Under pressure</th><th>Why</th><th>Risk</th></tr>
+  ${B.targets.map(t => `<tr><td><b style="color:${PINK}">${t.priority}</b></td><td><b>${t.name}</b><div class="mut">${t.role}</div></td><td>${t.slot}</td><td>${evidence(S[t.key])}</td><td>${t.why}</td><td class="mut">${t.risk}</td></tr>`).join('')}</table></div>
+  <div class="cols"><div><h3>Ones I would avoid</h3>${items(B.avoid)}</div><div><h3>Good numbers, not really available</h3>${items(B.unavailable)}<h3>Keep an eye on</h3>${items(B.watch)}</div></div>
+  <h3>Players I checked but didn't pick</h3>
+  <div style="overflow:auto"><table><tr><th>Player</th><th>Looked at</th><th>Under pressure</th><th>Where he lands</th><th>Why he is not in my ten</th></tr>${checked}</table></div>`;
+})();
+
+/* Method and limits */
+(function () {
+  const st = D.settings;
+  document.getElementById('method').innerHTML = `<div class="cols"><div><h2>How it works</h2>
+  <p><b>Why this approach.</b> Raw death-overs averages mix very different situations together and reward players who only bat in easy chases. I wanted every player judged against an average player on exactly the same balls.</p>
+  <p><b>Expected values.</b> Balls are grouped by format, innings, phase, wickets down, required-rate band and pace or spin. The average outcome of each group is the expectation; groups with fewer than 200 balls fall back to a broader group.</p>
+  <p><b>Player value.</b> Batters: runs above expected and dismissals avoided. Bowlers: runs saved and extra wickets (one wicket counts as ten runs). Then two more parts: how much better he is under pressure than on his own ordinary balls, and how good his worst quarter of pressure matches is.</p>
+  <p><b>Small samples.</b> Each value is multiplied by n / (n + k), with k = ${st.bat_prior_balls} balls for batters and ${st.bowl_prior_balls} for bowlers. Recent seasons weigh more (0.70 for 2022 up to 1.35 for 2026).</p>
+  <p><b>Weights.</b> Batting ${st.bat_weights.join(' / ')}, bowling ${st.bowl_weights.join(' / ')}, in the order above. These are my judgment, so I also tested equal weights.</p>
+  <p><b>Sample rules.</b> 150 pressure balls with both IPL and T20I evidence, 200 if almost all IPL, 280 if almost all T20I; 8 matches with 6+ pressure balls; 40 pressure balls in 2025-26. None of these rules look at performance.</p>
+  <p><b>Order.</b> Average position across 200 resamples of the matches.</p></div>
+  <div><h2>What it cannot tell you</h2>
+  <p>Pressure form repeats only weakly from one half of the data to the other, so these lists describe who has delivered in 2022-26, not a promise about 2027.</p>
+  <p>Only finishers and death bowlers face enough pressure balls to qualify, so top-order batters are mostly invisible here. Early powerplay collapses are rarely flagged.</p>
+  <p>The expected values include the player being rated, a small in-sample effect. T20I data includes Associate teams, which the groups only partly correct for.</p>
+  <p>Fitness and availability are not in the data. I bring them in from public reporting for the auction plan, and they never move a rank.</p>
+  <h2>Public information used</h2><ul class="mut">${D.board.public_information.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
+})();
+
+show((location.hash.replace('#tab=', '').replace('#', '')) || 'overview');
+</script></body></html>
